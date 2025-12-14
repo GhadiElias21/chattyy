@@ -110,7 +110,13 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
+// backend logout
 export const logout = (req: Request, res: Response) => {
-  res.clearCookie("token");
+  res.clearCookie("token", {
+    httpOnly: true,
+    path: "/",
+    sameSite: "lax",
+    secure: isProduction,
+  });
   res.json({ message: "Logged out successfully" });
 };

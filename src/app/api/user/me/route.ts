@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
-    // Forward the browser cookie to backend
     const cookie = req.headers.get("cookie") || "";
 
     const response = await fetch(`${process.env.BACKEND_URL}/api/user/me`, {

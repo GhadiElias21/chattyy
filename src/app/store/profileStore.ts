@@ -13,6 +13,7 @@ interface IProfileState {
   fetchProfile: () => Promise<void>;
   updateProfile: (data: Partial<IUser>) => Promise<void>;
   updateStatus: (status: IUser["status"]) => Promise<void>;
+  clearProfile: () => void;
 }
 
 const useProfileStore = create<IProfileState>((set) => ({
@@ -23,37 +24,86 @@ const useProfileStore = create<IProfileState>((set) => ({
   fetchProfile: async () => {
     set({ loading: true, error: null });
     try {
-      const data = await apiClient.get<{ user: IUser }>(API.user.me);
-      set({ user: data.user, loading: false });
+      // Your backend returns the user directly, not wrapped in { user }
+      const user = await apiClient.get<IUser>(API.user.me);
+
+      set({
+        user: {
+          ...user,
+          _id: user._id.toString ? user._id.toString() : String(user._id),
+        },
+        loading: false,
+      });
     } catch (err: unknown) {
-      set({ error: getErrorMessage(err), loading: false });
+      set({
+        error: getErrorMessage(err),
+        loading: false,
+      });
     }
   },
 
   updateProfile: async (profileData: Partial<IUser>) => {
     set({ loading: true, error: null });
     try {
-      const data = await apiClient.patch<{ user: IUser; message: string }>(
+      // Check your backend response structure
+      // Might be { user: IUser } or just IUser
+      const response = await apiClient.patch<IUser | { user: IUser }>(
         API.user.updateProfile,
         profileData
       );
-      set({ user: data.user, loading: false });
+
+      // Handle both response formats
+      const updatedUser = "user" in response ? response.user : response;
+
+      set({
+        user: {
+          ...updatedUser,
+          _id: updatedUser._id.toString
+            ? updatedUser._id.toString()
+            : String(updatedUser._id),
+        },
+        loading: false,
+      });
     } catch (err: unknown) {
-      set({ error: getErrorMessage(err), loading: false });
+      set({
+        error: getErrorMessage(err),
+        loading: false,
+      });
     }
   },
 
   updateStatus: async (status: IUser["status"]) => {
     set({ loading: true, error: null });
     try {
-      const data = await apiClient.patch<{ user: IUser; message: string }>(
+      const response = await apiClient.patch<IUser | { user: IUser }>(
         API.user.updateStatus,
         { status }
       );
-      set({ user: data.user, loading: false });
+
+      const updatedUser = "user" in response ? response.user : response;
+
+      set({
+        user: {
+          ...updatedUser,
+          _id: updatedUser._id.toString
+            ? updatedUser._id.toString()
+            : String(updatedUser._id),
+        },
+        loading: false,
+      });
     } catch (err: unknown) {
-      set({ error: getErrorMessage(err), loading: false });
+      set({
+        error: getErrorMessage(err),
+        loading: false,
+      });
     }
+  },
+
+  clearProfile: () => {
+    set({
+      user: null,
+      error: null,
+    });
   },
 }));
 

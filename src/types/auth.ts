@@ -1,6 +1,6 @@
 // /types/auth.d.ts
 export interface IUser {
-  id: string; // MongoDB _id as string
+  _id: string; // MongoDB _id as string
   username: string;
   displayName: string;
   email: string;

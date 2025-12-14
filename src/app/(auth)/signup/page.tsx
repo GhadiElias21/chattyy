@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import useAuthStore from "@/app/store/authStore";
+import { useRouter } from "next/navigation";
 
 export default function SignUpPage() {
   const { signup, loading, error } = useAuthStore();
@@ -11,9 +12,13 @@ export default function SignUpPage() {
   const [displayName, setDisplayName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const router = useRouter();
 
   const handleSignup = async () => {
     await signup(email, password, username, displayName);
+    if (!error) {
+      router.push("/");
+    }
   };
 
   return (

@@ -3,15 +3,20 @@
 import { useState } from "react";
 import Link from "next/link";
 import useAuthStore from "@/app/store/authStore";
+import { useRouter } from "next/navigation";
 
 export default function SignInPage() {
   const { login, loading, error } = useAuthStore();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const router = useRouter();
 
   const handleLogin = async () => {
     await login(email, password);
+    if (!error) {
+      router.push("/");
+    }
   };
 
   return (
