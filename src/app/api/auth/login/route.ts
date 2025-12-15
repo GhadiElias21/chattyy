@@ -12,7 +12,6 @@ export async function POST(req: NextRequest) {
 
     const data = await response.json();
 
-    // Forward backend cookies to the browser
     const res = NextResponse.json(data, { status: response.status });
     const setCookie = response.headers.get("set-cookie");
     if (setCookie) res.headers.set("set-cookie", setCookie);
